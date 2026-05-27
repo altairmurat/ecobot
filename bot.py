@@ -89,7 +89,7 @@ async def _process_and_reply(event, image_bytes: bytes | None, barcode: str | No
         if barcode:
             off_data = await lookup_openfoodfacts(barcode)
             if off_data:
-                await event.respond("🔍 Found in Open Food Facts! Analysing with GPT…")
+                await event.respond("🔍 Found in Open Food Facts! Analysing with LLM…")
                 analysis = await analyse_product_data(off_data)
                 # Enrich with names from OFF
                 analysis.setdefault("product_name", off_data.get("product_name"))
@@ -98,7 +98,7 @@ async def _process_and_reply(event, image_bytes: bytes | None, barcode: str | No
             else:
                 # Barcode not in OFF → fall back to vision if we have the image
                 if image_bytes:
-                    await event.respond("📦 Barcode found but not in database. Analysing photo with GPT Vision…")
+                    await event.respond("📦 Barcode found but not in database. Analysing photo with Vision Model…")
                     analysis = await analyse_image(image_bytes)
                     method = "photo"
                 else:
@@ -110,7 +110,7 @@ async def _process_and_reply(event, image_bytes: bytes | None, barcode: str | No
 
         # ── Path B: photo, no barcode → vision ───────────────────────────────
         elif image_bytes:
-            await event.respond("🤖 Analysing your product photo with GPT Vision…")
+            await event.respond("🤖 Analysing your product photo with Vision Model…")
             analysis = await analyse_image(image_bytes)
             method = "photo"
 
@@ -125,7 +125,7 @@ async def _process_and_reply(event, image_bytes: bytes | None, barcode: str | No
         _save_scan(db, telegram_id, analysis, barcode, method)
 
     except json.JSONDecodeError:
-        await event.respond("⚠️ GPT returned unexpected data. Please try again.")
+        await event.respond("⚠️ returned unexpected data. Please try again.")
     except Exception as exc:
         await event.respond(f"⚠️ Error: {exc}")
         raise
