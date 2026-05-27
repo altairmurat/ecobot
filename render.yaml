@@ -1,0 +1,27 @@
+# render.yaml – deploy to Render.com
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: ecobot
+    runtime: docker
+    plan: free            # change to "starter" for always-on
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: API_ID
+        sync: false        # set manually in Render dashboard
+      - key: API_HASH
+        sync: false
+      - key: BOT_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecobot-db
+          property: connectionString
+
+databases:
+  - name: ecobot-db
+    databaseName: ecobot
+    plan: free
